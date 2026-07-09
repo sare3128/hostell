@@ -1,0 +1,48 @@
+[
+  {
+    "id": 1,
+    "roomNumber": "101",
+    "capacity": 2,
+    "rent": 5000,
+    "occupied": true,
+    "tenant": "John Doe",
+    "floor": "1st"
+  },
+  {
+    "id": 2,
+    "roomNumber": "102",
+    "capacity": 2,
+    "rent": 5000,
+    "occupied": false,
+    "tenant": null,
+    "floor": "1st"
+  },
+  {
+    "id": 3,
+    "roomNumber": "103",
+    "capacity": 3,
+    "rent": 7000,
+    "occupied": true,
+    "tenant": "Jane Smith",
+    "floor": "1st"
+  },
+  {
+    "id": 4,
+    "roomNumber": "201",
+    "capacity": 2,
+    "rent": 5500,
+    "occupied": true,
+    "tenant": "Alice Johnson",
+    "floor": "2nd"
+  },
+  {
+    "id": 5,
+    "roomNumber": "202",
+    "capacity": 3,
+    "rent": 7500,
+    "occupied": false,
+    "tenant": null,
+    "floor": "2nd"
+  }
+]
+

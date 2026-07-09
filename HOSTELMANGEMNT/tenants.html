@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant List - Hostel Management</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <style>
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .form-group { margin: 15px 0; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { padding: 10px 20px; background: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0b7dda; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f5f5f5; font-weight: bold; }
+        .action-btn { padding: 5px 10px; margin: 0 5px; font-size: 12px; }
+        .delete-btn { background: #f44336; }
+        .edit-btn { background: #FF9800; }
+        .form-section { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tenant Management</h1>
+        
+        <div class="form-section">
+            <h2>Add New Tenant</h2>
+            <form id="tenantForm">
+                <div class="form-group">
+                    <label>Tenant Name:</label>
+                    <input type="text" id="name" placeholder="Enter tenant name" required>
+                </div>
+                <div class="form-group">
+                    <label>Room Number:</label>
+                    <input type="text" id="roomNo" placeholder="Enter room number" required>
+                </div>
+                <div class="form-group">
+                    <label>Monthly Rent (₹):</label>
+                    <input type="number" id="rent" placeholder="Enter monthly rent" required>
+                </div>
+                <div class="form-group">
+                    <label>Join Date:</label>
+                    <input type="date" id="joinDate" required>
+                </div>
+                <button type="submit">Add Tenant</button>
+                <button type="button" onclick="location.href='dashboard.html'">Back to Dashboard</button>
+            </form>
+        </div>
+
+        <h2>Tenant List</h2>
+        <table id="tenantsTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Room No</th>
+                    <th>Monthly Rent</th>
+                    <th>Join Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="tenantsList">
+                <tr><td colspan="6">No tenants added yet</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/tenants.js"></script>
+    
+    <script>
+        if (typeof loadData === 'function') loadData();
+
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'hostelDataUpdated') {
+                loadData();
+                displayTenants();
+            }
+        });
+
+        function displayTenants() {
+            const tenants = getTenants();
+            const tbody = document.getElementById('tenantsList');
+            
+            if (tenants.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6">No tenants added yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = tenants.map(t => `
+                <tr>
+                    <td>${t.name}</td>
+                    <td>${t.roomNo}</td>
+                    <td>₹${t.rent.toLocaleString()}</td>
+                    <td>${new Date(t.joinDate).toLocaleDateString()}</td>
+                    <td>${t.active ? 'Active' : 'Inactive'}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editTenant('${t.id}')">Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteTenant('${t.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function deleteTenant(id) {
+            if (confirm('Are you sure?')) {
+                removeTenant(parseInt(id));
+                displayTenants();
+            }
+        }
+        
+        function editTenant(id) {
+            const tenant = getTenantById(parseInt(id));
+            if (tenant) {
+                document.getElementById('name').value = tenant.name;
+                document.getElementById('roomNo').value = tenant.roomNo;
+                document.getElementById('rent').value = tenant.rent;
+                document.getElementById('joinDate').valueAsDate = new Date(tenant.joinDate);
+                document.getElementById('tenantForm').dataset.editId = id;
+            }
+        }
+        
+        document.getElementById('tenantForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const roomNo = document.getElementById('roomNo').value;
+            const rent = document.getElementById('rent').value;
+            const joinDate = document.getElementById('joinDate').value;
+            
+            if (this.dataset.editId) {
+                const id = parseInt(this.dataset.editId);
+                const tenant = getTenantById(id);
+                if (tenant) {
+                    tenant.name = name;
+                    tenant.roomNo = roomNo;
+                    tenant.rent = parseFloat(rent);
+                    tenant.joinDate = new Date(joinDate).toISOString();
+                    saveData();
+                }
+                delete this.dataset.editId;
+            } else {
+                addTenant(name, roomNo, rent, joinDate);
+            }
+            
+            this.reset();
+            document.getElementById('joinDate').valueAsDate = new Date();
+            displayTenants();
+        });
+        
+        // Set current date as default
+        document.getElementById('joinDate').valueAsDate = new Date();
+        
+        displayTenants();
+    </script>
+</body>
+</html>

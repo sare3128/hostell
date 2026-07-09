@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup & Restore - Hostel Management</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <style>
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .section { background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        h2 { color: #333; }
+        button { 
+            padding: 12px 24px; 
+            background: #2196F3; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover { background: #0b7dda; }
+        .danger { background: #f44336; }
+        .danger:hover { background: #da190b; }
+        .success { background: #4CAF50; }
+        .success:hover { background: #45a049; }
+        .message { 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 4px; 
+            display: none;
+        }
+        .message.success { 
+            background: #d4edda; 
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .message.error { 
+            background: #f8d7da; 
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        #fileInput { display: none; }
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Backup & Restore</h1>
+        <button onclick="location.href='dashboard.html'">Back to Dashboard</button>
+
+        <div class="section">
+            <h2>📊 Backup Your Data</h2>
+            <p>Download a backup of all your hostel data (tenants, payments, expenses)</p>
+            <button class="success" onclick="backupData()">📥 Download Backup</button>
+            <div class="info-box">
+                This will download a JSON file containing all your data. Keep it safe for recovery.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📂 Restore from Backup</h2>
+            <p>Upload a previously saved backup file to restore your data</p>
+            <button class="success" onclick="document.getElementById('fileInput').click()">📤 Upload Backup</button>
+            <input type="file" id="fileInput" accept=".json" onchange="restoreData(event)">
+            <div class="info-box">
+                Select a JSON backup file to restore. This will overwrite current data.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ Danger Zone</h2>
+            <p>Permanently delete all data (this cannot be undone)</p>
+            <button class="danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+            <div class="info-box">
+                Warning: This will delete all tenants, payments, and expenses permanently.
+            </div>
+        </div>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script src="js/app.js"></script>
+    
+    <script>
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + type;
+            setTimeout(() => msg.className = 'message', 5000);
+        }
+
+        function backupData() {
+            const data = hostelData;
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'hostel-backup-' + new Date().toISOString().split('T')[0] + '.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            showMessage('Backup downloaded successfully!', 'success');
+        }
+
+        function restoreData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.tenants && data.payments && data.expenses) {
+                        Object.assign(hostelData, data);
+                        saveData();
+                        showMessage('Data restored successfully!', 'success');
+                        document.getElementById('fileInput').value = '';
+                    } else {
+                        throw new Error('Invalid backup file format');
+                    }
+                } catch (error) {
+                    showMessage('Error: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Are you ABSOLUTELY sure? This will delete ALL data permanently!\n\nType "DELETE" to confirm.')) {
+                const confirmText = prompt('Type DELETE to confirm:');
+                if (confirmText === 'DELETE') {
+                    hostelData.tenants = [];
+                    hostelData.payments = [];
+                    hostelData.expenses = [];
+                    hostelData.rooms = [];
+                    saveData();
+                    showMessage('All data has been cleared!', 'success');
+                    setTimeout(() => location.href = 'dashboard.html', 2000);
+                } else {
+                    showMessage('Cancelled - data not cleared', 'error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

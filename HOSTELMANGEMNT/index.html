@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <style> 
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .demo-btn {
+            background: #4CAF50;
+            margin-top: 10px;
+        }
+        .demo-btn:hover {
+            background: #45a049;
+        }
+        .info {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #333;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>🏢 Hostel Management</h1>
+        <p class="subtitle">Professional Hostel Management System</p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Enter username" value="admin" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter password" value="admin" required>
+            </div>
+            <button type="submit">Login</button>
+            <button type="button" class="demo-btn" onclick="demoLogin()">Demo Login</button>
+        </form>
+
+        <div class="info">
+            <strong>Demo Credentials:</strong><br>
+            Username: admin<br>
+            Password: admin<br><br>
+            <strong>Features:</strong>
+            ✓ Manage Tenants & Rooms<br>
+            ✓ Track Payments & Collections<br>
+            ✓ Monitor Expenses & Profit<br>
+            ✓ Generate Reports<br>
+            ✓ Backup & Restore Data
+        </div>
+    </div>
+
+    <script>
+        function demoLogin() {
+            // Store a session flag
+            sessionStorage.setItem('isLoggedIn', 'true');
+            window.location.href = 'dashboard.html';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Simple demo authentication
+            if (username === 'admin' && password === 'admin') {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('username', username);
+                window.location.href = 'dashboard.html';
+            } else {
+                alert('Invalid credentials! Use: admin / admin');
+            }
+        });
+
+        // Check if already logged in
+        if (sessionStorage.getItem('isLoggedIn')) {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

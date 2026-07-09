@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code - Hostel Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        
+        .qr-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .qr-wrapper {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .qr-wrapper img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            color: #1565c0;
+            font-size: 14px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .url {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            word-break: break-all;
+            font-family: monospace;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .secondary-btn {
+            background: #666;
+        }
+        
+        .instructions {
+            text-align: left;
+            margin: 20px 0;
+            padding: 15px;
+            background: #fffbea;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .instructions h3 {
+            color: #ff6f00;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+        }
+        
+        @media (max-width: 480px) {
+            .qr-container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .qr-wrapper {
+                padding: 15px;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="qr-container">
+        <h1>🏢 Hostel Management</h1>
+        <p class="subtitle">Scan to access on your phone</p>
+        
+        <div class="qr-wrapper">
+            <img id="qrCode" src="" alt="QR Code">
+        </div>
+        
+        <div class="url" id="urlDisplay">Loading...</div>
+        
+        <div class="info">
+            📱 Open your phone camera and scan this QR code, or use any QR code scanner app
+        </div>
+        
+        <div class="instructions">
+            <h3>How to use:</h3>
+            <ol>
+                <li>Scan the QR code with your phone</li>
+                <li>Login with: <strong>admin / admin</strong></li>
+                <li>Or click "Demo Login"</li>
+                <li>Manage tenants, payments & expenses</li>
+            </ol>
+        </div>
+        
+        <button onclick="location.href='index.html'">Back to Login</button>
+        <button class="secondary-btn" onclick="location.reload()">Refresh QR Code</button>
+    </div>
+
+    <script>
+        // Get the local IP address and generate QR code
+        function getLocalIP() {
+            // Try to detect local IP from window location
+            let url = window.location.origin;
+            
+            // If running on localhost, try to use the network IP
+            if (url.includes('localhost') || url.includes('127.0.0.1')) {
+                // Fallback to common local IPs or ask user
+                url = 'http://172.20.10.3:8080';
+            }
+            
+            return url;
+        }
+        
+        function generateQRCode() {
+            const url = getLocalIP();
+            const qrCodeAPI = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
+            
+            document.getElementById('qrCode').src = qrCodeAPI;
+            document.getElementById('urlDisplay').textContent = url;
+        }
+        
+        // Generate QR code on page load
+        window.addEventListener('load', generateQRCode);
+        
+        // Also allow manual refresh
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'r' && e.ctrlKey) {
+                generateQRCode();
+            }
+        });
+    </script>
+</body>
+</html>
